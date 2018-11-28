@@ -1,5 +1,6 @@
 (ns xmas.core
-  (:gen-class))
+  (:gen-class)
+  (:import [java.io Writer]))
 
 (defn color [code s] (str \u001b "[" code "m" s \u001b "[m"))
 (defn strs  [n s] (apply str (repeat n s)))
@@ -16,8 +17,8 @@
               \u0020 \u2E1B \u2042 \u2E2E "&" "@" \uFF61])
 (def object-colors [21 33 34 35 36 37])
 
-(defn write-tree [writer size]
-  (letfn [(write [s] (.write writer s))]
+(defn write-tree [^Writer writer size]
+  (letfn [(write [^String s] (.write writer s))]
     (write (str (strs (inc size) " ") star "\n"))
     (doseq [l (map inc (range size))]
       (write (str (strs (- size l) " ") left))
