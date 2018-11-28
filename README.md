@@ -5,7 +5,7 @@
 ## Usage
 
 ```clj
-clj -Sdeps '{:deps {liquidz/clj-xmas {:git/url "https://github.com/liquidz/clj-xmas" :sha "FIXME"}}}' -m xmas.core
+clj -Sdeps '{:deps {liquidz/clj-xmas {:git/url "https://github.com/liquidz/clj-xmas" :sha "12f9248d793e6ac55d765c9fc9cae18a68ee7407"}}}' -m xmas.core
 ```
 
 You can specify tree size
