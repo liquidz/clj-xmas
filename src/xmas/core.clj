@@ -30,4 +30,5 @@
 
 (defn -main [& [size]]
   (let [size (or (and size (Long/parseLong size)) default-size)]
-    (write-tree *out* size)))
+    (write-tree *out* size)
+    (flush)))
