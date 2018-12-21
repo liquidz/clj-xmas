@@ -13,7 +13,7 @@ repl:
 	iced repl -A:dev
 
 run:
-	clj -m xmas.core
+	clojure -m xmas.core
 
 test:
 	clojure -R:dev -A:test
