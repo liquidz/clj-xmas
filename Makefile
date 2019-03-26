@@ -1,7 +1,12 @@
-.PHONY: native-image install uninstall repl run test ancient clean
+.PHONY: native-image docker-build install uninstall repl run test ancient clean
 
-native-image:
+target/xmas:
 	mkdir -p target && clojure -A:native-image
+
+native-image: target/xmas
+
+docker-build: target/xmas
+	docker build -t uochan/xmas .
 
 install:
 	\cp -pi target/xmas /usr/local/bin
