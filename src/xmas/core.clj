@@ -1,8 +1,10 @@
 (ns xmas.core
   (:gen-class)
-  (:require [clojure.tools.cli :as cli]
-            [clojure.string :as str])
-  (:import java.util.Random))
+  (:require
+   [clojure.string :as str]
+   [clojure.tools.cli :as cli])
+  (:import
+   java.util.Random))
 
 (defn color [code s] (str \u001b "[" code "m" s \u001b "[m"))
 (defn strs [n s & more] (apply str (concat (repeat n s) more)))
@@ -44,8 +46,9 @@
    ["-i" "--interval INTERVAL" :default 1 :parse-fn parse-long]
    ["-h" "--help"]])
 
-(defn -main [& args]
-  (let [{:keys [arguments options summary errors]} (cli/parse-opts args cli-options)
+(defn -main
+  [& args]
+  (let [{:keys [options summary errors]} (cli/parse-opts args cli-options)
         {:keys [size number animation interval help]} options
         r (Random. (System/currentTimeMillis))]
     (cond
