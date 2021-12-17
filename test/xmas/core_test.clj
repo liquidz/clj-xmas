@@ -1,7 +1,7 @@
 (ns xmas.core-test
-  (:require [clojure.string :as str]
-            [clojure.test :as t]
-            [xmas.core :as sut]))
+  (:require
+   [clojure.test :as t]
+   [xmas.core :as sut]))
 
 (t/deftest generate-tree-test
   (let [size 5

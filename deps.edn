@@ -1,30 +1,22 @@
-{
- :paths ["src"]
+{:paths ["src"]
  :deps
- {org.clojure/clojure {:mvn/version "1.9.0"}
-  org.clojure/tools.cli {:mvn/version "0.4.1"}}
+ {org.clojure/clojure {:mvn/version "1.10.3"}
+  org.clojure/tools.cli {:mvn/version "1.0.206"}}
+
+ :tools/usage
+ {:ns-default xmas.tool}
 
  :aliases
- {
-  :dev
+ {:dev
   {:extra-paths ["test"]
-   :extra-deps {lambdaisland/kaocha {:mvn/version "0.0-248"}}}
+   :extra-deps {lambdaisland/kaocha {:mvn/version "1.60.945"}}}
 
   :test
   {:main-opts ["-m" "kaocha.runner"]}
 
-  :native-image
-  {:main-opts ["-m clj.native-image xmas.core"
-               "--report-unsupported-elements-at-runtime"
-               "-H:Name=target/xmas"]
+  :build {:deps {io.github.clojure/tools.build {:git/tag "v0.6.8" :git/sha "d79ae84"}}
+          :ns-default build}
 
-   :extra-deps {clj.native-image {:git/url "https://github.com/taylorwood/clj.native-image.git"
-                                  :sha "d97f25aa153e0f94139f5d03e60a345151815d4d"}}}
-
-  :ancient
-  {:extra-deps {olical/depot {:mvn/version "1.5.0"}}
-   :main-opts ["-m" "depot.outdated.main"]}
-  }
-
- :jvm-opts ["-Dclojure.compiler.direct-linking=true"]
-}
+  :outdated
+  {:extra-deps {com.github.liquidz/antq {:mvn/version "RELEASE"}}
+   :main-opts ["-m" "antq.core"]}}}

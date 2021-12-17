@@ -1,0 +1,8 @@
+{:rules {:indentation {:list-indent 1}
+         :blank-lines {:insert-padding? false
+                       :trim-consecutive? true}
+         :vars {:enabled? false}
+         :functions {:enabled? false}
+         :types {:enabled? false}
+         :namespaces {:indent-size 1}}}
+;; vim: ft=clojure
