@@ -9,7 +9,7 @@
 (defn color [code s] (str \u001b "[" code "m" s \u001b "[m"))
 (defn strs [n s & more] (apply str (concat (repeat n s) more)))
 (defn cursor-up [n] (print (str \u001b "[" n "F")))
-(defn parse-long [s] (Long/parseLong s))
+(defn parse-long' [s] (Long/parseLong s))
 (defn rand-nth' [^Random r coll] (nth coll (int (* (.nextDouble r) (count coll)))))
 
 (def star   (color 33 \u2605))
@@ -24,10 +24,10 @@
 (def object-colors [21 33 34 35 36 37])
 
 (def cli-options
-  [["-s" "--size SIZE" "Tree size" :default 5 :parse-fn parse-long :validate [#(< 0 % 100)]]
-   ["-n" "--number NUMBER" "Number of trees" :default 1 :parse-fn parse-long]
+  [["-s" "--size SIZE" "Tree size" :default 5 :parse-fn parse-long' :validate [#(< 0 % 100)]]
+   ["-n" "--number NUMBER" "Number of trees" :default 1 :parse-fn parse-long']
    ["-a" "--animation"]
-   ["-i" "--interval INTERVAL" :default 1 :parse-fn parse-long]
+   ["-i" "--interval INTERVAL" :default 1 :parse-fn parse-long']
    ["-h" "--help"]])
 
 (defn generate-tree [^Random r size]
