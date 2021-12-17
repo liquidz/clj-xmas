@@ -6,7 +6,7 @@ image:xmas.png[]
 
 [source,clojure]
 ----
-clojure -Sdeps '{:deps {liquidz/clj-xmas {:git/url "https://github.com/liquidz/clj-xmas" :sha "ddae8092c079656a62fafd9655e00c4cf8496a07"}}}' -m xmas.core
+clojure -Sdeps '{:deps {com.github.liquidz/clj-xmas {:git/tag "1.0.0" :sha "c399dd4"}}}' -M -m xmas.core
 ----
 
 === Clojure CLI Tools (`1.10.3.933` or later)
@@ -14,7 +14,7 @@ clojure -Sdeps '{:deps {liquidz/clj-xmas {:git/url "https://github.com/liquidz/c
 [source,sh]
 ----
 # Install as a tool
-clojure -Ttools install com.github.liquidz/clj-xmas '{:git/tag "FIXME"}' :as merry
+clojure -Ttools install com.github.liquidz/clj-xmas '{:git/tag "1.0.0"}' :as merry
 
 # Plant a tree
 clojure -Tmerry xmas
