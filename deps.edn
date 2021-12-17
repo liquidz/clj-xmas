@@ -1,14 +1,12 @@
-{
- :paths ["src"]
+{:paths ["src"]
  :deps
- {org.clojure/clojure {:mvn/version "1.9.0"}
-  org.clojure/tools.cli {:mvn/version "0.4.1"}}
+ {org.clojure/clojure {:mvn/version "1.10.3"}
+  org.clojure/tools.cli {:mvn/version "1.0.206"}}
 
  :aliases
- {
-  :dev
+ {:dev
   {:extra-paths ["test"]
-   :extra-deps {lambdaisland/kaocha {:mvn/version "0.0-248"}}}
+   :extra-deps {lambdaisland/kaocha {:mvn/version "1.60.945"}}}
 
   :test
   {:main-opts ["-m" "kaocha.runner"]}
