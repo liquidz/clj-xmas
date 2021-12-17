@@ -3,6 +3,9 @@
  {org.clojure/clojure {:mvn/version "1.10.3"}
   org.clojure/tools.cli {:mvn/version "1.0.206"}}
 
+ :tools/usage
+ {:ns-default xmas.tool}
+
  :aliases
  {:dev
   {:extra-paths ["test"]
