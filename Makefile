@@ -84,7 +84,7 @@ run:
 
 .PHONY: test
 test:
-	clojure -R:dev -A:test
+	clojure -M:dev:test
 
 .PHONY: outdated
 outdated:
