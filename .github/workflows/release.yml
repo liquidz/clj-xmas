@@ -3,15 +3,12 @@ name: release
 on:
   push:
     tags:
-      - '*.*.*'
+      - "*.*.*"
 
 env:
   app-name: clj-xmas
-  release-files: clj-xmas README.* LICENSE
-
-defaults:
-  run:
-    shell: bash
+  repo: com.github.liquidz
+  pkg: merry
 
 jobs:
   build:
@@ -22,43 +19,75 @@ jobs:
           - runs-on: ubuntu-latest
             os: linux
             cmd: gu
-            opts: '--static'
+            opts: "--static"
           - runs-on: macOS-latest
             os: darwin
             cmd: gu
-            opts: ''
-          # - runs-on: windows-latest
-          #   os: windows
-          #   cmd: gu.cmd
-
+            opts: ""
+          - runs-on: windows-latest
+            os: windows
+            cmd: gu.cmd
     steps:
       - uses: actions/checkout@v2
+      - name: Install cl.exe
+        if: ${{ matrix.os == 'windows' }}
+        uses: ilammy/msvc-dev-cmd@v1
       - uses: DeLaGuardo/setup-clojure@master
         with:
-          cli: '1.10.3.1040'
+          cli: "1.10.3.1040"
           lein: latest
           # boot: latest
-      - name: Build native image
+      - uses: DeLaGuardo/setup-graalvm@master
+        with:
+          graalvm: "21.3.0"
+          java: "java11"
+          arch: "amd64"
+      - name: Install deps on win
+        if: ${{ matrix.os == 'windows' }}
+        shell: powershell
         run: |
-          make native-image
-            # PLATFORM=$(echo ${{matrix.os}}|tr '[:upper:]' '[:lower:]') \
-            # GRAAL_ARCHIVE=graalvm-ce-java11-${{ matrix.os }}-amd64-21.3.0.$(
-            #   [ ${{ matrix.os }} = windows ] && echo zip || echo tar.gz
-            # ) \
-            # native-image
-      - name: Run command
+          ${{ matrix.cmd }} install native-image
+          clojure -Ttools install ${{ env.repo }}/${{ env.app-name }} "{:local/root \"${PWD}\"}" :as ${{ env.pkg }}
+          clojure -T:build uberjar
+      - name: Install deps on linux or mac
+        if: ${{ matrix.os != 'windows' }}
+        shell: bash
         run: |
-          ./${{ env.app-name }}
-          ./${{ env.app-name }} -h
+          ${{ matrix.cmd }} install native-image
+          clojure -Ttools install ${{ env.repo }}/${{ env.app-name }} "{:local/root \"${PWD}\"}" :as ${{ env.pkg }}
+          clojure -T:build uberjar
+      - name: Build native image on win
+        if: ${{ matrix.os == 'windows' }}
+        run: |
+          native-image -jar target/clj-xmas.jar -H:Name=clj-xmas -H:+ReportExceptionStackTraces  --initialize-at-build-time --report-unsupported-elements-at-runtime -H:Log=registerResource: --verbose --no-fallback --static "-J-Xmx3g"
+      - name: Build native image on mac or linux
+        if: ${{ matrix.os != 'windows' }}
+        run: |
+          native-image \
+            -jar target/${{ env.app-name }}.jar \
+            -H:Name=${{ env.app-name }} \
+            -H:+ReportExceptionStackTraces \
+            -J-Dclojure.spec.skip-macros=true \
+            -J-Dclojure.compiler.direct-linking=true \
+            --initialize-at-build-time  \
+            --report-unsupported-elements-at-runtime \
+            -H:Log=registerResource: \
+            --verbose \
+            --no-fallback \
+            --no-server \
+            $([ ${{ matrix.os }} = darwin ] || echo '--static') \
+            "-J-Xmx3g"
       - name: Create artifact
+        shell: bash
         run: |
-          assets="${{ env.app-name }}_$(echo "${{ runner.os }}" | tr '[:upper:]' '[:lower:]')"
-          echo "$assets"
+          ls -la
+          [ -f "clj-xmas_windows" ] && mv clj-xmas_windows clj-xmas
+          assets="${{ env.app-name }}_${{ matrix.os }}"
           mkdir -p "dist/$assets"
-          cp -r ${{ env.release-files }} "dist/$assets/"
+          cp -r ${{ env.app-name }} README.adoc LICENSE "dist/$assets/"
           (
             cd dist
-            if [[ "${{ runner.os }}" == Windows ]]; then
+            if [[ "${{ matrix.os }}" == windows ]]; then
               7z a "$assets.zip" "$assets"
             else
               tar czf "$assets.tar.gz" "$assets"
@@ -71,6 +100,7 @@ jobs:
           path: |
             dist/*.tar.gz
             dist/*.zip
+
   create-release:
     runs-on: ubuntu-latest
     needs:
@@ -89,10 +119,9 @@ jobs:
           release_name: ${{ github.ref }}
           draft: false
           prerelease: false
-
       - name: Write upload_url to file
-        run: echo '${{ steps.create-release.outputs.upload_url }}' > upload_url.txt
-
+        run: |
+          echo '${{ steps.create-release.outputs.upload_url }}' > upload_url.txt
       - uses: actions/upload-artifact@v2
         with:
           name: create-release
@@ -108,20 +137,19 @@ jobs:
             asset_name_suffix: linux.tar.gz
             asset_content_type: application/gzip
           - os: darwin
-            asset_name_suffix: macos.tar.gz
+            asset_name_suffix: darwin.tar.gz
             asset_content_type: application/gzip
-          # - os: windows-latest
-          #   asset_name_suffix: windows.zip
-          #   asset_content_type: application/zip
+          - os: windows
+            asset_name_suffix: windows.zip
+            asset_content_type: application/zip
+
     steps:
       - uses: actions/download-artifact@v2
         with:
           name: artifact-${{ matrix.os }}
-
       - uses: actions/download-artifact@v2
         with:
           name: create-release
-
       - id: vars
         run: |
           echo "::set-output name=upload_url::$(cat upload_url.txt)"
