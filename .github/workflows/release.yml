@@ -32,10 +32,10 @@ jobs:
       - name: Install cl.exe
         if: ${{ matrix.os == 'windows' }}
         uses: ilammy/msvc-dev-cmd@v1
-      - uses: DeLaGuardo/setup-clojure@master
+      - uses: DeLaGuardo/setup-clojure@3.7
         with:
-          cli: "1.10.3.1040"
-      - uses: DeLaGuardo/setup-graalvm@master
+          cli: latest
+      - uses: DeLaGuardo/setup-graalvm@5.0
         with:
           graalvm: "21.3.0"
           java: "java11"
