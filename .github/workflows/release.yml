@@ -35,7 +35,8 @@ jobs:
       - uses: DeLaGuardo/setup-clojure@master
         with:
           cli: "1.10.3.1040"
-          lein: latest
+          # cli: latest
+          # lein: latest
           # boot: latest
       - uses: DeLaGuardo/setup-graalvm@master
         with:
@@ -47,14 +48,14 @@ jobs:
         shell: powershell
         run: |
           ${{ matrix.cmd }} install native-image
-          clojure -Ttools install ${{ env.repo }}/${{ env.app-name }} "{:local/root \"${PWD}\"}" :as ${{ env.pkg }}
+          # clojure -Ttools install ${{ env.repo }}/${{ env.app-name }} "{:local/root \"${PWD}\"}" :as ${{ env.pkg }}
           clojure -T:build uberjar
       - name: Install deps on linux or mac
         if: ${{ matrix.os != 'windows' }}
         shell: bash
         run: |
           ${{ matrix.cmd }} install native-image
-          clojure -Ttools install ${{ env.repo }}/${{ env.app-name }} "{:local/root \"${PWD}\"}" :as ${{ env.pkg }}
+          # clojure -Ttools install ${{ env.repo }}/${{ env.app-name }} "{:local/root \"${PWD}\"}" :as ${{ env.pkg }}
           clojure -T:build uberjar
       - name: Build native image on win
         if: ${{ matrix.os == 'windows' }}
@@ -63,20 +64,12 @@ jobs:
       - name: Build native image on mac or linux
         if: ${{ matrix.os != 'windows' }}
         run: |
-          native-image \
-            -jar target/${{ env.app-name }}.jar \
-            -H:Name=${{ env.app-name }} \
-            -H:+ReportExceptionStackTraces \
-            -J-Dclojure.spec.skip-macros=true \
-            -J-Dclojure.compiler.direct-linking=true \
-            --initialize-at-build-time  \
-            --report-unsupported-elements-at-runtime \
-            -H:Log=registerResource: \
-            --verbose \
-            --no-fallback \
-            --no-server \
-            $([ ${{ matrix.os }} = darwin ] || echo '--static') \
-            "-J-Xmx3g"
+          which native-image
+          make GRAAL_HOME="$(
+            which native-image|sed 's_/bin/native-image__'
+          )" GRAAL_EXTRA_OPTION="$(
+            [ ${{ matrix.os }} = darwin ] || echo '--static'
+          )" native-image -o graalvm -o uberjar
       - name: Create artifact
         shell: bash
         run: |
